@@ -16,6 +16,13 @@ sudo apt-get install libopenblas-dev liblapack-dev
 armadillo(线性代数库):
 
 ```
+wget http://sourceforge.net/projects/arma/files/armadillo-7.200.2.tar.xz
+
+```
+
+最新的版本可以在 http://arma.sourceforge.net/download.html 找到。
+
+```
 tar -Jxvf armadillo-7.200.2.tar.xz
 cd armadillo-7.200.2
 cmake .
