@@ -1,10 +1,10 @@
 
 #include <iostream>
 #include <armadillo>
-#include <../include/mini_net.hpp>
+#include <../include/lego_net.hpp>
 
 using namespace arma;
-using namespace mini_net;
+using namespace lego_net;
 using std::shared_ptr;
 
 

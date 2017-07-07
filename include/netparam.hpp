@@ -1,14 +1,14 @@
 
-#ifndef MINI_NET_NETPARAM_HPP_
-#define MINI_NET_NETPARAM_HPP_
+#ifndef   LEGO_NET_NETPARAM_HPP_
+#define LEGO_NET_NETPARAM_HPP_
 #include "blob.hpp"
 #include "layer.hpp"
 #include "test.hpp"
 #include <json/json.h>
 #include <unordered_map>
 #include <fstream>
-namespace mini_net {
-
+using std::unordered_map;
+namespace lego_net {
 struct NetParam {
     /*! methods of update net parameters, sgd/momentum/... */
     std::string update;
@@ -32,5 +32,5 @@ struct NetParam {
 
     void readNetParam(std::string file);
 };
-}//end mini net
+}
 #endif

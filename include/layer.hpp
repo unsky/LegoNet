@@ -1,13 +1,13 @@
 
-#ifndef MINI_NET_LAYER_HPP_
-#define MINI_NET_LAYER_HPP_
+#ifndef LEGO_NET_LAYER_HPP_
+#define LEGO_NET_LAYER_HPP_
 
 #include "blob.hpp"
 #include <memory>
 using std::vector;
 using std::shared_ptr;
 
-namespace mini_net {
+namespace lego_net {
 
 /*! layer parameters */
 struct Param {
@@ -290,6 +290,6 @@ public:
                    int mode = 0);
 };
 
-} // namespace mini_net
+} // namespace lego_net
 
-#endif // MINI_NET_LAYER_
+#endif // LEGO_NET_LAYER_

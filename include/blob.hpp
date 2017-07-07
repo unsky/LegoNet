@@ -1,6 +1,6 @@
 
-#ifndef MINI_NET_BLOB_HPP_
-#define MINI_NET_BLOB_HPP_
+#ifndef LEGO_NET_BLOB_HPP_
+#define LEGO_NET_BLOB_HPP_
 
 #include <armadillo>
 #include <vector>
@@ -13,7 +13,7 @@ using std::vector;
 using std::shared_ptr;
 using namespace arma;
 
-namespace mini_net {
+namespace lego_net {
 
 enum FillType {
     TNONE = 0,
@@ -144,4 +144,4 @@ Blob compare(Blob& A, Blob& B);
 
 } // namespace MiniNet
 
-#endif // MINI_NET_BLOB_
+#endif // LEGO_NET_BLOB_

@@ -1,12 +1,11 @@
 
 
-#include "../include/mini_net.hpp"
+#include "../include/lego_net.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
-
 using namespace std;
-using namespace mini_net;
+using namespace lego_net;
 using namespace arma;
 
 int ReverseInt(int i) {

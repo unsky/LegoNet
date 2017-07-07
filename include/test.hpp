@@ -1,11 +1,11 @@
 
-#ifndef MINI_NET_TEST_HPP_
-#define MINI_NET_TEST_HPP_
+#ifndef LEGO_NET_TEST_HPP_
+#define LEGO_NET_TEST_HPP_
 
 #include "blob.hpp"
 #include "layer.hpp"
 
-namespace mini_net {
+namespace lego_net {
 
 class Test {
 
@@ -138,6 +138,6 @@ public:
     }
 };
 
-} // namespace mini_net
+} // namespace lego_net
 
-#endif // MINI_NET_TEST_
+#endif // LEGO_NET_TEST_

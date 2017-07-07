@@ -1,7 +1,7 @@
 
 #include "../include/blob.hpp"
 
-namespace mini_net {
+namespace lego_net {
 
 Blob operator+(Blob& A, double num) {
     Blob out(A.size());

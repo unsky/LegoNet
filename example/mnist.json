@@ -27,7 +27,7 @@
         {
             "name": "conv1",
             "type": "Conv" ,
-            "kernel num": 5,
+            "kernel num": 96,
             "kernel width": 3,
             "kernel height": 3,
             "pad": 1,
@@ -44,6 +44,28 @@
             "kernel width": 2,
             "kernel height": 2
         },
+
+        {
+            "name": "conv2",
+            "type": "Conv" ,
+            "kernel num": 96,
+            "kernel width": 3,
+            "kernel height": 3,
+            "pad": 1,
+            "stride": 1
+        },
+        {
+            "name": "relu2", 
+            "type": "Relu"
+        },
+        {
+            "name": "pool2",
+            "type": "Pool",
+            "stride": 2,
+            "kernel width": 2,
+            "kernel height": 2
+        },
+
         {
             "name": "fc1",
             "type": "Fc",
