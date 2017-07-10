@@ -30,7 +30,35 @@ make
 sudo make install
 ```
 
+安装 
+
+```
+安装legonet
+
+make all
+
+安装 debugall//debug 自定义层
+
+make debugall
+
+安装 测试mnist//mnist 例子
+
+make mnist
+
+```
+
 测试mnist:
 ```
- ./build/mnist  example/t10k-images-idx3-ubyte  example/t10k-labels-idx1-ubyte  example/mnist.json
+ ./data/mnist/get_mnist.sh
+
+ ./build/mnist  data/mnist/t10k-images-idx3-ubyte  data/mnist/t10k-labels-idx1-ubyte  example/mnist.json
 ```
+测试自定义层步骤
+
+1. 在include/layers.hpp 中添加层定义
+2. 在src/ 中定义自己的层
+3. 在debug/debug_layers.hpp中添加要测试的层
+4. 在debug/debug_layers/中添加要测试方法
+5. 使用debug/debug进行测试
+6. 在Makefile中的 debugall中添加自定义层的cpp
+
