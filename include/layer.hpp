@@ -51,239 +51,94 @@ struct Param {
     int fc_kernels;
 };
 
-/*!
- * \brief Affine Layer
- */
+// affine_layer
 class AffineLayer {
 public:
     AffineLayer() {}
     ~AffineLayer() {}
-
-    /*!
-    * \brief forward
-    * Blob bottom[0]:                                                                 in[1]:weight
-    *     _______          _______         __  _______________________         __      __  _______________________          __
-    *  C /______/|   N    /______/|        |  |_______________________| __      |      |  |_______________________| __       |
-    *   |------||| ······|------|||   ===> |          ...                |      |   *  |            ...              |       | . T() + b
-    * H |------|||       |------|||   ===> |   _______________________    > N   |      |   _______________________    > F    |
-    *   |------|/        |------|/         |_ |_______________________| _|     _|      |_ |_______________________| _|      _|
-    *      W                                                                                         
-    *   \___________  __________/             \___________  __________/                  \___________  __________/          
-    *               \/                                    \/                                         \/
-    *           [N,C,H,W]                               C*H*W                                       C*H*N
-    *
-    *             X:        [N, C, Hx, Wx]
-    *             weight:   [F, C, Hw, Ww]
-    *             bias:     [F, 1, 1, 1]
-    *             out:      [N, F, 1, 1]
-    * \param[in]  const vector<Blob*>& in       in[0]:X, in[1]:weights, in[2]:bias
-    * \param[out] Blob& out                     Y
-    */
     static void forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out);
 
-    /*!
-    * \brief backward
-    *             in:       [N, C, Hx, Wx]
-    *             weight:   [F, C, Hw, Ww]
-    *             bias:     [F, 1, 1, 1]
-    *             dout:     [N, F, 1, 1]
-    * \param[in]  const Blob* dout              dout
-    * \param[in]  const vector<Blob*>& cache    cache[0]:X, cache[1]:weights, cache[2]:bias
-    * \param[out] vector<Blob*>& grads          grads[0]:dX, grads[1]:dW, grads[2]:db
-    */
     static void backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads);
 };
 
-/*!
-* \brief Convolutional Layer
-*/
+//conv_layer
 class ConvLayer {
 public:
     ConvLayer() {}
     ~ConvLayer() {}
 
-    /*!
-    * \brief forward
-    *  Blob bottom[0]:
-    *     _______          _______                                               _______          _______
-    *  C /______/|   N    /______/|                                           C /______/|   N*F  /______/| 
-    *   |------||| ······|------|||                                            |------||| ······|------|||
-    * H |------|||       |------|||    *   F个kernel size为(n,n)的卷积核  =  Hw |------|||       |------||| Hw
-    *   |------|/        |------|/                                             |------|/        |------|/
-    *      W                                                                      Ww               Ww
-    *   \___________  __________/
-    *               \/
-    *            [N,C,H,W]  
-    *
-    *             X:        [N, C, Hx, Wx]
-    *             weight:   [F, C, Hw, Ww]
-    *             bias:     [F, 1, 1, 1]
-    *             out:      [N, F, (Hx+pad*2-Hw)/stride+1, (Wx+pad*2-Ww)/stride+1]
-    * \param[in]  const vector<Blob*>& in       in[0]:X, in[1]:weights, in[2]:bias
-    * \param[in]  const ConvParam* param        conv params
-    * \param[out] Blob& out                     Y
-    */
     static void forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param);
 
-    /*!
-    * \brief backward
-    *             in:       [N, C, Hx, Wx]
-    *             weight:   [F, C, Hw, Ww]
-    *             bias:     [F, 1, 1, 1]
-    *             dout:     [N, F, (Hx+pad*2-Hw)/stride+1, (Wx+pad*2-Ww)/stride+1]
-    * \param[in]  const Blob* dout              dout
-    * \param[in]  const vector<Blob*>& cache    cache[0]:X, cache[1]:weights, cache[2]:bias
-    * \param[out] vector<Blob*>& grads          grads[0]:dX, grads[1]:dW, grads[2]:db
-    */
     static void backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param);
 };
 
-/*!
-* \brief Max Pooling Layer
-*/
+//pool_layer
 class PoolLayer {
 public:
     PoolLayer() {}
     ~PoolLayer() {}
 
-    /*!
-    * \brief forward
-    *             X:        [N, C, Hx, Wx]
-    *             out:      [N, C, Hx/2, Wx/2]
-    * \param[in]  const vector<Blob*>& in       in[0]:X
-    * \param[in]  const Param* param        conv params
-    * \param[out] Blob& out                     Y
-    */
     static void forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param);
 
-    /*!
-    * \brief backward
-    *             in:       [N, C, Hx, Wx]
-    *             dout:     [N, F, Hx/2, Wx/2]
-    * \param[in]  const Blob* dout              dout
-    * \param[in]  const vector<Blob*>& cache    cache[0]:X
-    * \param[out] vector<Blob*>& grads          grads[0]:dX
-    */
     static void backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param);
 };
 
-/*!
-* \brief ReLU Layer
-*/
+//relu_layer
 class ReluLayer {
 public:
     ReluLayer() {}
     ~ReluLayer() {}
-
-    /*!
-    * \brief forward, out = max(0, X)
-    *             X:        [N, C, Hx, Wx]
-    *             out:      [N, C, Hx, Wx]
-    * \param[in]  const vector<Blob*>& in       in[0]:X
-    * \param[out] Blob& out                     Y
-    */
     static void forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out);
-
-    /*!
-    * \brief backward, dX = dout .* (X > 0)
-    *             in:       [N, C, Hx, Wx]
-    *             dout:     [N, F, Hx, Wx]
-    * \param[in]  const Blob* dout              dout
-    * \param[in]  const vector<Blob*>& cache    cache[0]:X
-    * \param[out] vector<Blob*>& grads          grads[0]:dX
-    */
     static void backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads);
 };
 
-/*!
-* \brief Dropout Layer
-*/
+//dropout_layer
 class DropoutLayer {
 public:
     DropoutLayer() {}
     ~DropoutLayer() {}
 
-    /*!
-    * \brief forward
-    *             X:        [N, C, Hx, Wx]
-    *             out:      [N, C, Hx, Wx]
-    * \param[in]  const vector<Blob*>& in       in[0]:X
-    * \param[out] Blob& out                     Y
-    */
+
     static void forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param);
-
-    /*!
-    * \brief backward
-    *             in:       [N, C, Hx, Wx]
-    *             dout:     [N, F, Hx, Wx]
-    * \param[in]  const Blob* dout              dout
-    * \param[in]  const vector<Blob*>& cache    cache[0]:X
-    * \param[out] vector<Blob*>& grads          grads[0]:dX
-    */
     static void backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param);
 };
 
-/*!
-* \brief Softmax Loss Layer
-*/
+//softmaxloss_layer
 class SoftmaxLossLayer {
 public:
     SoftmaxLossLayer() {}
     ~SoftmaxLossLayer() {}
-
-    /*!
-    * \brief forward
-    *             X:        [N, C, 1, 1], usually the output of affine(fc) layer
-    *             Y:        [N, C, 1, 1], ground truth, with 1(true) or 0(false)
-    * \param[in]  const vector<Blob*>& in       in[0]:X, in[1]:Y
-    * \param[out] double& loss                  loss
-    * \param[out] Blob** out                    out: dX
-    * \param[in]  int mode                      1: only forward, 0:forward and backward
-    */
     static void go(const vector<shared_ptr<Blob>>& in,
                    double& loss,
                    shared_ptr<Blob>& dout,
                    int mode = 0);
 };
-
-/*!
-* \brief SVM Loss Layer
-*/
+//svmloss_layer
 class SVMLossLayer {
 public:
     SVMLossLayer() {}
     ~SVMLossLayer() {}
-
-    /*!
-    * \brief forward
-    *             X:        [N, C, 1, 1], usually the output of affine(fc) layer
-    *             Y:        [N, C, 1, 1], ground truth, with 1(true) or 0(false)
-    * \param[in]  const vector<Blob*>& in       in[0]:X, in[1]:Y
-    * \param[out] double& loss                  loss
-    * \param[out] Blob** out                    out: dX
-    * \param[in]  int mode                      1: only forward, 0:forward and backward
-    */
     static void go(const vector<shared_ptr<Blob>>& in,
                    double& loss,
                    shared_ptr<Blob>& dout, 

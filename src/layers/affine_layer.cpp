@@ -11,6 +11,28 @@ namespace lego_net {
 * \param[in]  const Param* param            params
 * \param[out] Blob& out                     Y
 */
+
+
+    /*!
+    * \brief forward
+    * Blob bottom[0]:                                                                 in[1]:weight
+    *     _______          _______         __  _______________________         __      __  _______________________          __
+    *  C /______/|   N    /______/|        |  |_______________________| __      |      |  |_______________________| __       |
+    *   |------||| ······|------|||   ===> |          ...                |      |   *  |            ...              |       | . T() + b
+    * H |------|||       |------|||   ===> |   _______________________    > N   |      |   _______________________    > F    |
+    *   |------|/        |------|/         |_ |_______________________| _|     _|      |_ |_______________________| _|      _|
+    *      W                                                                                         
+    *   \___________  __________/             \___________  __________/                  \___________  __________/          
+    *               \/                                    \/                                         \/
+    *           [N,C,H,W]                               C*H*W                                       C*H*N
+    *
+    *             X:        [N, C, Hx, Wx]
+    *             weight:   [F, C, Hw, Ww]
+    *             bias:     [F, 1, 1, 1]
+    *             out:      [N, F, 1, 1]
+    * \param[in]  const vector<Blob*>& in       in[0]:X, in[1]:weights, in[2]:bias
+    * \param[out] Blob& out                     Y
+    */
 void AffineLayer::forward(const vector<shared_ptr<Blob>>& in, shared_ptr<Blob>& out) {
     if (out) {
         out.reset();

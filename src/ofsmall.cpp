@@ -213,7 +213,7 @@ int main()
     //testRelu();
     //testDropout();
     //testSoftmax();
-    //testSVM();
+    testSVM();
     //testTest();
     //int n = 3;
     //testNet();
@@ -223,7 +223,7 @@ int main()
     //}
     //Blob b(4,2,2,2,TRANDN);
     //b.reshape().print();
-    testSampleNetTrain();
+  //  testSampleNetTrain();
 
     return 0;
 }

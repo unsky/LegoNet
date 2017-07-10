@@ -86,10 +86,10 @@ private:
     vector<std::string> ltype_;
     /*! \brief temporary loss score */
     double loss_;
-    // train data set
+    // train data 
     shared_ptr<Blob> X_train_;
     shared_ptr<Blob> Y_train_;
-    // val data set
+    // val data 
     shared_ptr<Blob> X_val_;
     shared_ptr<Blob> Y_val_;
     

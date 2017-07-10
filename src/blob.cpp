@@ -431,6 +431,7 @@ void Blob::print(std::string s) {
     }
     return;
 }
+//blob实现方式，使用n个cube组成
 
 void Blob::_init(int n, int c, int h, int w, int type) {
     if (type == TONES) {
@@ -454,4 +455,4 @@ void Blob::_init(int n, int c, int h, int w, int type) {
     return;
 }
 
-} // namespace mini_net
+} // namespace lego_net

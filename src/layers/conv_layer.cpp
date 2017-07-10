@@ -11,6 +11,29 @@ namespace lego_net {
 * \param[in]  const ConvParam* param        conv params: stride, pad
 * \param[out] Blob** out                    Y
 */
+
+
+    /*!
+    * \brief forward
+    *  Blob bottom[0]:
+    *     _______          _______                                               _______          _______
+    *  C /______/|   N    /______/|                                           C /______/|   N*F  /______/| 
+    *   |------||| ······|------|||                                            |------||| ······|------|||
+    * H |------|||       |------|||    *   F个kernel size为(n,n)的卷积核  =  Hw |------|||       |------||| Hw
+    *   |------|/        |------|/                                             |------|/        |------|/
+    *      W                                                                      Ww               Ww
+    *   \___________  __________/
+    *               \/
+    *            [N,C,H,W]  
+    *
+    *             X:        [N, C, Hx, Wx]
+    *             weight:   [F, C, Hw, Ww]
+    *             bias:     [F, 1, 1, 1]
+    *             out:      [N, F, (Hx+pad*2-Hw)/stride+1, (Wx+pad*2-Ww)/stride+1]
+    * \param[in]  const vector<Blob*>& in       in[0]:X, in[1]:weights, in[2]:bias
+    * \param[in]  const ConvParam* param        conv params
+    * \param[out] Blob& out                     Y
+    */
 void ConvLayer::forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param) {
@@ -58,6 +81,9 @@ void ConvLayer::forward(const vector<shared_ptr<Blob>>& in,
 * \param[in]  const vector<Blob*>& cache    cache[0]:X, cache[1]:weights, cache[2]:bias
 * \param[out] vector<Blob*>& grads          grads[0]:dX, grads[1]:dW, grads[2]:db
 */
+
+
+
 void ConvLayer::backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,

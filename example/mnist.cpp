@@ -75,6 +75,7 @@ void ReadMnistData(string path, shared_ptr<Blob>& image) {
 
 void trainMnist(shared_ptr<Blob>& X, shared_ptr<Blob>& Y, string config) {
     NetParam param;
+    //read parparameters in **.json
     param.readNetParam(config);
 
     shared_ptr<Blob> X_train(new Blob(X->subBlob(0, 9000)));
@@ -90,14 +91,14 @@ void trainMnist(shared_ptr<Blob>& X, shared_ptr<Blob>& Y, string config) {
     inst.train(param);
 }
 
-void help() {
+void usage() {
     cout << "usage:" << endl
-         << "./mnist [data_path] [label_path] [config_path]" << endl;
+         << "./mnist [data_path] [label_path] [net parparameters like in mnist/mnist.json]" << endl;
     return;
 }
 int main(int argc, char** argv) {
     if (argc != 4) {
-        help();
+        usage();
         return -1;
     }
     shared_ptr<Blob> images(new Blob(10000,1,28,28));
