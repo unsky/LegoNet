@@ -73,6 +73,9 @@ public:
     inline int get_W() {
         return W_;
     }
+    inline void shape_string(){
+        cout << N_<< " " << C_ << " " << H_ << " " << W_ << " (" << N_*C_*H_*W_ << ")" << endl;
+    }
 
     // return data_
     vector<cube>& get_data();

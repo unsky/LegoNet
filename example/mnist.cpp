@@ -86,9 +86,10 @@ void trainMnist(shared_ptr<Blob>& X, shared_ptr<Blob>& Y, string config) {
     vector<shared_ptr<Blob>> YY{Y_train, Y_val};
 
     Net inst;
-    inst.initNet(param, XX, YY);
+    inst.setup(param, XX, YY);
     //inst.testNet(param);
-    inst.train(param);
+    Slover slover;
+    slover.slove(param,XX,YY);
 }
 
 void usage() {

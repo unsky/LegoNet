@@ -37,12 +37,12 @@ public:
      * \param[in]  vector<shared_ptr<Blob>>& X       X[0]: train data,  X[1]: val data
      * \param[in]  vector<shared_ptr<Blob>>& Y       Y[0]: train label, Y[1]: val label
      */
-    void initNet(NetParam& param,
+    void setup(NetParam& param,
                  vector<shared_ptr<Blob>>& X,
                  vector<shared_ptr<Blob>>& Y);
 
     /*! \brief train the net */
-    void train(NetParam& param);
+    void slove(NetParam& param);
 
     //void sampleInitData();
 
@@ -113,6 +113,6 @@ private:
 
 }; // class Net
 
-} // namespace mini_net
+} // 
 
 #endif

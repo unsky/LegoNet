@@ -1,5 +1,7 @@
 
 #include "../include/net.hpp"
+#include <iostream>
+using namespace std;
 
 namespace lego_net {
 
@@ -119,166 +121,108 @@ void Net::testNet(NetParam& param) {
     }
 }
 
-void Net::initNet(NetParam& param,
+void Net::setup(NetParam& param,
                   vector<shared_ptr<Blob>>& X,
                   vector<shared_ptr<Blob>>& Y) {
-
+    cout << "setup the network:" << endl;
     layers_ = param.layers;
     ltype_ = param.ltypes;
-    for (int i = 0; i < (int)layers_.size(); ++i) {
-        data_[layers_[i]] = vector<shared_ptr<Blob>>(3);
-        grads_[layers_[i]] = vector<shared_ptr<Blob>>(3);
-        step_cache_[layers_[i]] = vector<shared_ptr<Blob>>(3);
-        best_model_[layers_[i]] = vector<shared_ptr<Blob>>(3);
-    }
-    X_train_ = X[0];
-    Y_train_ = Y[0];
-    X_val_ = X[1];
-    Y_val_ = Y[1];
 
+// setup data
+    cout << "the input data: ";
+    X[0]->shape_string();
+    cout << "the label:";
+    Y[0]->shape_string();
+    data_[layers_[0]] = vector<shared_ptr<Blob>>(3);
+    grads_[layers_[0]] = vector<shared_ptr<Blob>>(3);
+    step_cache_[layers_[0]] = vector<shared_ptr<Blob>>(3);
+    best_model_[layers_[0]] = vector<shared_ptr<Blob>>(3);
+
+    data_[layers_[0]][0].reset(new Blob(X[0]->get_N(), X[0]->get_C(), X[0]->get_H(), X[0]->get_W(), TRANDN))
+    // loss data_[0] ==> datas , data[1] ==>labels
+    data_[layers_.back()][1].reset(new Blob(Y[0]->get_N(), Y[0]->get_C(), Y[0]->get_H(), Y[0]->get_W(), TRANDN));
+    // debug
+    Blob pb, pd;
+    //use forward once to setup the network
+    for (int i = 0; i < (int)layers_.size()-1; ++i) {
+        cout << "creating " << lytype[i]<<": "<<endl;
+        data_[layers_[i+1]] = vector<shared_ptr<Blob>>(3);
+        grads_[layers_[i+1]] = vector<shared_ptr<Blob>>(3);
+        step_cache_[layers_[i+1]] = vector<shared_ptr<Blob>>(3);
+        best_model_[layers_[i+1]] = vector<shared_ptr<Blob>>(3);
+        
+        
+        std::string ltype = ltype_[i];
+        std::string lname = layers_[i];
+
+        //bottom
+        vector<shared_ptr<Blob>> bottom = data_[lname];
+
+        cout<< "creating " << ltype << ": " << endl;
+        cout<< "the bottom:";
+        cout<< bottom[0]->shape_string();
+        //up
+        shared_ptr<Blob> up;
+        if (ltype == "Conv") {
+            int tF = param.params[lname].conv_kernels;
+            int tC = bottom[0]->get_C();
+            int tH = param.params[lname].conv_height;
+            int tW = param.params[lname].conv_width;
+            cout<< " the conv layer param: " << tF << "  " << tC << " " << tH << " " << tW <<endl;
+            if (!bottom[1]) {
+                bottom[1].reset(new Blob(tF, tC, tH, tW, TRANDN));
+                (*bottom[1]) *= 1e-2;
+            }
+            if (!bottom[2]) {
+                bottom[2].reset(new Blob(tF, 1, 1, 1, TRANDN));
+                (*bottom[2]) *= 1e-1;
+            }
+            ConvLayer::forward(bottom, up , param.params[lname]);
+        }
+        if (ltype == "Pool") {
+            PoolLayer::forward(bottom, up, param.params[lname]);
+        }
+        if (ltype == "Fc") {
+            int tF = param.params[lname].fc_kernels;
+            int tC = bottom[0]->get_C();
+            int tH = bottom[0]->get_H();
+            int tW = bottom[0]->get_W();
+            if (!bottom[1]) {
+                bottom[1].reset(new Blob(tF, tC, tH, tW, TRANDN));
+                (*bottom[1]) *= 1e-2;
+            }
+            if (!bottom[2]) {
+                bottom[2].reset(new Blob(tF, 1, 1, 1, TRANDN));
+                (bottom[2]) *= 1e-1;
+            }
+            AffineLayer::forward(bottom, up);
+        }
+        if (ltype == "Relu")
+            ReluLayer::forward(bottom, up);
+        if (ltype == "Dropout")
+            DropoutLayer::forward(bottom, up, param.params[lname]);
+        cout << "the up :" << up->shape_string() << endl;
+        data_[layers_[i+1]][0] = up;
+    }
+
+    // calc loss
+    std::string loss_type = ltype_.back();
+    cout<<"creating loss layer:"<<endl;
+    cout<< loss_type<<"bottom: ";
+    cout<< data_[layers_.back()][0]->shape_string();
+    shared_ptr<Blob> dout;
+    if (loss_type == "SVM")
+        SVMLossLayer::go(data_[layers_.back()], loss_, dout);
+    if (loss_type == "Softmax")
+        SoftmaxLossLayer::go(data_[layers_.back()], loss_, dout);
+    grads_[layers_.back()][0] = dout;
+    loss_history_.push_back(loss_);
+    cout<< "the loss output:" <<endl;
+    cout << dout->shape_string();
     return;
 }
 
-void Net::train(NetParam& param) {
-    // to be delete
-    int N = X_train_->get_N();
-    int iter_per_epochs;
-    if (param.use_batch) {
-        iter_per_epochs = N / param.batch_size;
-    }
-    else {
-        iter_per_epochs = N;
-    }
-    int num_iters = iter_per_epochs * param.num_epochs;
-    int epoch = 0;
 
-    // iteration
-    for (int iter = 0; iter < num_iters; ++iter) {
-        // batch
-        shared_ptr<Blob> X_batch;
-        shared_ptr<Blob> Y_batch;
-        if (param.use_batch) {
-            // deep copy
-            X_batch.reset(new Blob(X_train_->subBlob((iter * param.batch_size) % N,
-                                                        ((iter+1) * param.batch_size) % N)));
-            Y_batch.reset(new Blob(Y_train_->subBlob((iter * param.batch_size) % N,
-                                                        ((iter+1) * param.batch_size) % N)));
-        }
-        else {
-            shared_ptr<Blob> X_batch = X_train_;
-            shared_ptr<Blob> Y_batch = Y_train_;
-        }
-
-        // train
-        trainNet(X_batch, Y_batch, param);
-
-        // update
-        for (int i = 0; i < (int)layers_.size(); ++i) {
-            std::string lname = layers_[i];
-            if (!data_[lname][1] || !data_[lname][2]) {
-                continue;
-            }
-            for (int j = 1; j <= 2; ++j) {
-                assert(param.update == "momentum" ||
-                       param.update == "rmsprop" ||
-                       param.update == "adagrad" ||
-                       param.update == "sgd");
-                shared_ptr<Blob> dx(new Blob(data_[lname][j]->size()));
-                if (param.update == "sgd") {
-                    *dx = -param.lr * (*grads_[lname][j]);
-                }
-                if (param.update == "momentum") {
-                    if (!step_cache_[lname][j]) {
-                        step_cache_[lname][j].reset(new Blob(data_[lname][j]->size(), TZEROS));
-                    }
-                    Blob ll = param.momentum * (*step_cache_[lname][j]);
-                    Blob rr = param.lr * (*grads_[lname][j]);
-                    *dx = ll - rr;
-                    step_cache_[lname][j] = dx;
-                }
-                if (param.update == "rmsprop") {
-                    // change it self
-                    double decay_rate = 0.99;
-                    if (!step_cache_[lname][j]) {
-                        step_cache_[lname][j].reset(new Blob(data_[lname][j]->size(), TZEROS));
-                    }
-                    Blob r1 = decay_rate * (*step_cache_[lname][j]);
-                    Blob r2 = (1 - decay_rate) * (*grads_[lname][j]);
-                    Blob r3 = r2 * (*grads_[lname][j]);
-                    *step_cache_[lname][j] = r1 + r3;
-                    Blob d1 = (*step_cache_[lname][j]) + 1e-8;
-                    Blob u1 = param.lr * (*grads_[lname][j]);
-                    Blob d2 = lego_net::sqrt(d1);
-                    Blob r4 = u1 / d2;
-                    *dx = 0 - r4;
-                }
-                if (param.update == "adagrad") {
-                    if (!step_cache_[lname][j]) {
-                        step_cache_[lname][j].reset(new Blob(data_[lname][j]->size(), TZEROS));
-                    }
-                    *step_cache_[lname][j] = (*grads_[lname][j]) * (*grads_[lname][j]);
-                    Blob d1 = (*step_cache_[lname][j]) + 1e-8;
-                    Blob u1 = param.lr * (*grads_[lname][j]);
-                    Blob d2 = lego_net::sqrt(d1);
-                    Blob r4 = u1 / d2;
-                    *dx = 0 - r4;
-                }
-                *data_[lname][j] = (*data_[lname][j]) + (*dx);
-            }
-        }
-
-        // evaluate
-        bool first_it = (iter == 0);
-        bool epoch_end = (iter + 1) % iter_per_epochs == 0;
-        bool acc_check = (param.acc_frequence && (iter+1) % param.acc_frequence == 0);
-        if (first_it || epoch_end || acc_check) {
-            // update learning rate[TODO]
-            if ((iter > 0 && epoch_end) || param.acc_update_lr) {
-                param.lr *= param.lr_decay;
-                if (epoch_end) {
-                    epoch++;
-                }
-            }
-
-            // evaluate train set accuracy
-            shared_ptr<Blob> X_train_subset;
-            shared_ptr<Blob> Y_train_subset;
-            if (N > 1000) {
-                X_train_subset.reset(new Blob(X_train_->subBlob(0, 100)));
-                Y_train_subset.reset(new Blob(Y_train_->subBlob(0, 100)));
-            }
-            else {
-                X_train_subset = X_train_;
-                Y_train_subset = Y_train_;
-            }
-            trainNet(X_train_subset, Y_train_subset, param, "forward");
-            double train_acc = prob(*data_[layers_.back()][1], *data_[layers_.back()][0]);
-            train_acc_history_.push_back(train_acc);
-
-            // evaluate val set accuracy[TODO: change train to val]
-            trainNet(X_val_, Y_val_, param, "forward");
-            double val_acc = prob(*data_[layers_.back()][1], *data_[layers_.back()][0]);
-            val_acc_history_.push_back(val_acc);
-
-            // print
-            printf("iter: %d  loss: %f  train_acc: %0.2f%%    val_acc: %0.2f%%    lr: %0.6f\n",
-                    iter, loss_, train_acc*100, val_acc*100, param.lr);
-
-            // save best model[TODO]
-            //if (val_acc_history_.size() > 1 && val_acc < val_acc_history_[val_acc_history_.size()-2]) {
-            //    for (auto i : layers_) {
-            //        if (!data_[i][1] || !data_[i][2]) {
-            //            continue;
-            //        }
-            //        best_model_[i][1] = data_[i][1];
-            //        best_model_[i][2] = data_[i][2];
-            //    }
-            //}
-        }
-    }
-
-    return;
-}
 
 
 void Net::testLayer(NetParam& param, int lnum) {
