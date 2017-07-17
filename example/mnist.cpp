@@ -1,6 +1,7 @@
 
 
 #include "../include/lego_net.hpp"
+#include "../include/slover.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -88,7 +89,7 @@ void trainMnist(shared_ptr<Blob>& X, shared_ptr<Blob>& Y, string config) {
     Net inst;
     inst.setup(param, XX, YY);
     //inst.testNet(param);
-    Slover slover;
+    Slover slover(param);
     slover.slove(param,XX,YY);
 }
 

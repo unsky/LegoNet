@@ -1,6 +1,7 @@
 #include <iostream>
 #include <armadillo>
 #include <../include/lego_net.hpp>
+#include <../include/slover.hpp>
 
 using namespace arma;
 using namespace lego_net;
@@ -55,8 +56,9 @@ void testSampleNetTrain() {
     Net inst;
     vector<shared_ptr<Blob>> data{X,X};
     vector<shared_ptr<Blob>> label{Y,Y};
-    inst.initNet(param, data, label);
-    inst.train(param);
+    inst.setup(param, data, label);
+    Slover slover(param);
+    slover.slove(param,data,label);
 }
 }// debug
 

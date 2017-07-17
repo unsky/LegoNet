@@ -23,10 +23,7 @@ public:
     Net(){}
 
     /*! \brief forward and backward */
-    void trainNet(shared_ptr<Blob>& X, 
-                  shared_ptr<Blob>& Y,
-                  NetParam& param,
-                  std::string mode = "fb");
+
 
     /*! \brief test if all layers are right, be careful set reg to 0 */
     void testNet(NetParam& param);
@@ -42,7 +39,6 @@ public:
                  vector<shared_ptr<Blob>>& Y);
 
     /*! \brief train the net */
-    void slove(NetParam& param);
 
     //void sampleInitData();
 

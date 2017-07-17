@@ -1,15 +1,122 @@
-#include <isotream>
+#include <iostream>
 #include "../include/netparam.hpp"
-#include "include/slover.hpp"
-#include "include/net.hpp"
+#include "../include/slover.hpp"
+#include "../include/net.hpp"
 using namespace std;
 namespace lego_net{
+
+void Slover::trainNet(shared_ptr<Blob>& X,
+                    shared_ptr<Blob>& Y,
+                    NetParam& param,
+                    std::string mode) {
+    /*! fill X, Y */
+    data_[layers_[0]][0] = X;
+    data_[layers_.back()][1] = Y;
+    // debug
+    Blob pb, pd;
+
+    /*! forward */
+    int n = ltype_.size();
+    for (int i = 0; i < n-1; ++i) {
+        std::string ltype = ltype_[i];
+        std::string lname = layers_[i];
+        shared_ptr<Blob> out;
+        if (ltype == "Conv") {
+            int tF = param.params[lname].conv_kernels;
+            int tC = data_[lname][0]->get_C();
+            int tH = param.params[lname].conv_height;
+            int tW = param.params[lname].conv_width;
+            if (!data_[lname][1]) {
+                data_[lname][1].reset(new Blob(tF, tC, tH, tW, TRANDN));
+                (*data_[lname][1]) *= 1e-2;
+            }
+            if (!data_[lname][2]) {
+                data_[lname][2].reset(new Blob(tF, 1, 1, 1, TRANDN));
+                (*data_[lname][2]) *= 1e-1;
+            }
+            ConvLayer::forward(data_[lname], out, param.params[lname]);
+        }
+        if (ltype == "Pool") {
+            PoolLayer::forward(data_[lname], out, param.params[lname]);
+            pb = *data_[lname][0];
+        }
+        if (ltype == "Fc") {
+            int tF = param.params[lname].fc_kernels;
+            int tC = data_[lname][0]->get_C();
+            int tH = data_[lname][0]->get_H();
+            int tW = data_[lname][0]->get_W();
+            if (!data_[lname][1]) {
+                data_[lname][1].reset(new Blob(tF, tC, tH, tW, TRANDN));
+                (*data_[lname][1]) *= 1e-2;
+            }
+            if (!data_[lname][2]) {
+                data_[lname][2].reset(new Blob(tF, 1, 1, 1, TRANDN));
+                (*data_[lname][2]) *= 1e-1;
+            }
+            AffineLayer::forward(data_[lname], out);
+        }
+        if (ltype == "Relu")
+            ReluLayer::forward(data_[lname], out);
+        if (ltype == "Dropout")
+            DropoutLayer::forward(data_[lname], out, param.params[lname]);
+        data_[layers_[i+1]][0] = out;
+    }
+
+    // calc loss
+    std::string loss_type = ltype_.back();
+    shared_ptr<Blob> dout;
+    if (loss_type == "SVM")
+        SVMLossLayer::go(data_[layers_.back()], loss_, dout);
+    if (loss_type == "Softmax")
+        SoftmaxLossLayer::go(data_[layers_.back()], loss_, dout);
+    grads_[layers_.back()][0] = dout;
+
+    loss_history_.push_back(loss_);
+
+    if (mode == "forward")
+        return;
+
+    /*! backward */
+    for (int i = n-2; i >= 0; --i) {
+        std::string ltype = ltype_[i];
+        std::string lname = layers_[i];
+        if (ltype == "Conv")
+            ConvLayer::backward(grads_[layers_[i+1]][0], data_[lname],
+                                grads_[lname], param.params[lname]);
+        if (ltype == "Pool") {
+            PoolLayer::backward(grads_[layers_[i+1]][0], data_[lname],
+                                grads_[lname], param.params[lname]);
+        }
+        if (ltype == "Fc")
+            AffineLayer::backward(grads_[layers_[i+1]][0], data_[lname], grads_[lname]);
+        if (ltype == "Relu")
+            ReluLayer::backward(grads_[layers_[i+1]][0], data_[lname], grads_[lname]);
+    }
+
+    // regularition
+    double reg_loss = 0;
+    for (auto i : layers_) {
+        if (grads_[i][1]) {
+            // it's ok?
+            Blob reg_data = param.reg * (*data_[i][1]);
+            (*grads_[i][1]) = (*grads_[i][1]) + reg_data;
+            reg_loss += data_[i][1]->sum();
+        }
+    }
+    reg_loss *= param.reg * 0.5;
+    loss_ = loss_ + reg_loss;
+
+    return;
+}
+
+
 void Slover::slove(NetParam& param, vector<shared_ptr<Blob>> X , vector<shared_ptr<Blob>> Y) {
+    cout << "sloving:" << endl;
     // to be delete
     X_train_ = X[0];
     Y_train_ = Y[0];
     X_val_ = X[1];
-    Y_val_ = Y[1]
+    Y_val_ = Y[1];
     int N = X_train_->get_N();
     int iter_per_epochs;
     if (param.use_batch) {
@@ -39,7 +146,9 @@ void Slover::slove(NetParam& param, vector<shared_ptr<Blob>> X , vector<shared_p
         }
 
         // train
+   
         trainNet(X_batch, Y_batch, param);
+       
 
         // update
         for (int i = 0; i < (int)layers_.size(); ++i) {

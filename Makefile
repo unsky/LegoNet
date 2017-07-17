@@ -37,11 +37,11 @@ mnist : mnist.o libleogonet.a
 mnist.o : lego_net.hpp mnist.cpp
 	$(CC) -c example/mnist.cpp $(CXXFLAG)
 
-libleogonet.a : blob.o  net.o  netparam.o affine_layer.o conv_layer.o dropout_layer.o pool_layer.o relu_layer.o softmaxloss_layer.o svmloss_layer.o
-	ar r libleogonet.a blob.o  net.o netparam.o affine_layer.o conv_layer.o dropout_layer.o pool_layer.o relu_layer.o softmaxloss_layer.o svmloss_layer.o
+libleogonet.a : blob.o  net.o  slover.o netparam.o affine_layer.o conv_layer.o dropout_layer.o pool_layer.o relu_layer.o softmaxloss_layer.o svmloss_layer.o
+	ar r libleogonet.a blob.o slover.o net.o netparam.o affine_layer.o conv_layer.o dropout_layer.o pool_layer.o relu_layer.o softmaxloss_layer.o svmloss_layer.o
 
-blob.o layer.o net.o netparam.o: blob.hpp layer.hpp net.hpp  netparam.hpp test.hpp blob.cpp net.cpp netparam.cpp dropout_layer.cpp pool_layer.cpp relu_layer.cpp  softmaxloss_layer.cpp svmloss_layer.cpp affine_layer.cpp conv_layer.cpp
-	$(CC) -c src/blob.cpp src/net.cpp src/netparam.cpp src/layers/dropout_layer.cpp src/layers/pool_layer.cpp src/layers/relu_layer.cpp  src/layers/relu_layer.cpp  src/layers/softmaxloss_layer.cpp src/layers/svmloss_layer.cpp src/layers/affine_layer.cpp src/layers/conv_layer.cpp $(CXXFLAG)
+blob.o layer.o net.o netparam.o: blob.hpp layer.hpp net.hpp slover.hpp netparam.hpp test.hpp blob.cpp net.cpp netparam.cpp dropout_layer.cpp pool_layer.cpp relu_layer.cpp  softmaxloss_layer.cpp svmloss_layer.cpp affine_layer.cpp conv_layer.cpp
+	$(CC) -c src/blob.cpp src/net.cpp src/slover.cpp src/netparam.cpp src/layers/dropout_layer.cpp src/layers/pool_layer.cpp src/layers/relu_layer.cpp  src/layers/relu_layer.cpp  src/layers/softmaxloss_layer.cpp src/layers/svmloss_layer.cpp src/layers/affine_layer.cpp src/layers/conv_layer.cpp $(CXXFLAG)
 	
 
 
