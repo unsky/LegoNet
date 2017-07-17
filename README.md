@@ -5,6 +5,7 @@ CNN框架设计（from zero to one）
 目前主要完成CNN的基本部分。
 
 抽象：
+
 ![image](https://github.com/unsky/LegoNet/blob/master/framework.png)
 
 目前主要目标为模块化各个层。
