@@ -60,11 +60,12 @@ make mnist
  ./build/mnist  data/mnist/t10k-images-idx3-ubyte  data/mnist/t10k-labels-idx1-ubyte  example/mnist.json
 ```
 测试自定义层步骤
-
+```
 1. 在include/layers.hpp 中添加层定义
 2. 在src/ 中定义自己的层
 3. 在debug/debug_layers.hpp中添加要测试的层
 4. 在debug/debug_layers/中添加要测试方法
 5. 使用debug/debug进行测试
 6. 在Makefile中的 debugall中添加自定义层的cpp
+```
 
