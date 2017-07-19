@@ -34,10 +34,10 @@ void Slover::trainNet(shared_ptr<Blob>& X,
                 data_[lname][2].reset(new Blob(tF, 1, 1, 1, TRANDN));
                 (*data_[lname][2]) *= 1e-1;
             }
-            ConvLayer::forward(data_[lname], out, param.params[lname]);
+            ConvLayer::cpu_forward(data_[lname], out, param.params[lname]);
         }
         if (ltype == "Pool") {
-            PoolLayer::forward(data_[lname], out, param.params[lname]);
+            PoolLayer::cpu_forward(data_[lname], out, param.params[lname]);
             pb = *data_[lname][0];
         }
         if (ltype == "Fc") {
@@ -53,12 +53,12 @@ void Slover::trainNet(shared_ptr<Blob>& X,
                 data_[lname][2].reset(new Blob(tF, 1, 1, 1, TRANDN));
                 (*data_[lname][2]) *= 1e-1;
             }
-            AffineLayer::forward(data_[lname], out);
+            AffineLayer::cpu_forward(data_[lname], out);
         }
         if (ltype == "Relu")
-            ReluLayer::forward(data_[lname], out);
+            ReluLayer::cpu_forward(data_[lname], out);
         if (ltype == "Dropout")
-            DropoutLayer::forward(data_[lname], out, param.params[lname]);
+            DropoutLayer::cpu_forward(data_[lname], out, param.params[lname]);
         data_[layers_[i+1]][0] = out;
     }
 
@@ -81,16 +81,16 @@ void Slover::trainNet(shared_ptr<Blob>& X,
         std::string ltype = ltype_[i];
         std::string lname = layers_[i];
         if (ltype == "Conv")
-            ConvLayer::backward(grads_[layers_[i+1]][0], data_[lname],
+            ConvLayer::cpu_backward(grads_[layers_[i+1]][0], data_[lname],
                                 grads_[lname], param.params[lname]);
         if (ltype == "Pool") {
-            PoolLayer::backward(grads_[layers_[i+1]][0], data_[lname],
+            PoolLayer::cpu_backward(grads_[layers_[i+1]][0], data_[lname],
                                 grads_[lname], param.params[lname]);
         }
         if (ltype == "Fc")
-            AffineLayer::backward(grads_[layers_[i+1]][0], data_[lname], grads_[lname]);
+            AffineLayer::cpu_backward(grads_[layers_[i+1]][0], data_[lname], grads_[lname]);
         if (ltype == "Relu")
-            ReluLayer::backward(grads_[layers_[i+1]][0], data_[lname], grads_[lname]);
+            ReluLayer::cpu_backward(grads_[layers_[i+1]][0], data_[lname], grads_[lname]);
     }
 
     // regularition

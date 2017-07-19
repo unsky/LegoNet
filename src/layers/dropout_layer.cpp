@@ -12,7 +12,7 @@ namespace lego_net {
 * \param[in]  Param& param                  int mode, double p, int seed, Blob *mask
 * \param[out] Blob& out                     Y
 */
-void DropoutLayer::forward(const vector<shared_ptr<Blob>>& in,
+void DropoutLayer::cpu_forward(const vector<shared_ptr<Blob>>& in,
                            shared_ptr<Blob>& out,
                            Param& param) {
     if (out) {
@@ -53,7 +53,7 @@ void DropoutLayer::forward(const vector<shared_ptr<Blob>>& in,
 * \param[in]  Param& param                  int mode, double p, int seed, Blob *mask
 * \param[out] vector<Blob*>& grads          grads[0]:dX
 */
-void DropoutLayer::backward(shared_ptr<Blob>& dout,
+void DropoutLayer::cpu_backward(shared_ptr<Blob>& dout,
                             const vector<shared_ptr<Blob>>& cache,
                             vector<shared_ptr<Blob>>& grads,
                             Param& param) {

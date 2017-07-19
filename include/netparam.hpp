@@ -10,6 +10,7 @@
 using std::unordered_map;
 namespace lego_net {
 struct NetParam {
+    std::string cal_mode;
     /*! methods of update net parameters, sgd/momentum/... */
     std::string update;
     /*! learning rate */

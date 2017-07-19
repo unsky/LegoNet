@@ -12,6 +12,7 @@ public:
     layers_ = param.layers;
     ltype_ = param.ltypes;
     for (int i = 0; i < (int)layers_.size(); ++i) {
+        //init all data 
         data_[layers_[i]] = vector<shared_ptr<Blob>>(3);
         grads_[layers_[i]] = vector<shared_ptr<Blob>>(3);
         step_cache_[layers_[i]] = vector<shared_ptr<Blob>>(3);
@@ -19,7 +20,6 @@ public:
     }
     }
     void slove(NetParam& param, vector<shared_ptr<Blob>> X, vector<shared_ptr<Blob>> Y);
-
     void trainNet(shared_ptr<Blob>& X, 
                   shared_ptr<Blob>& Y,
                   NetParam& param,

@@ -34,7 +34,7 @@ namespace lego_net {
     * \param[in]  const ConvParam* param        conv params
     * \param[out] Blob& out                     Y
     */
-void ConvLayer::forward(const vector<shared_ptr<Blob>>& in,
+void ConvLayer::cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param) {
     if (out) {
@@ -84,7 +84,7 @@ void ConvLayer::forward(const vector<shared_ptr<Blob>>& in,
 
 
 
-void ConvLayer::backward(shared_ptr<Blob>& dout,
+void ConvLayer::cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param) {

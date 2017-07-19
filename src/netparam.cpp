@@ -12,6 +12,7 @@ namespace lego_net {
         if (!value["train"].isNull()) {
             auto &tparam = value["train"];
             this->lr = tparam["learning rate"].asDouble();
+            this->cal_mode = tparam["update method"].asString();
             this->lr_decay = tparam["lr decay"].asDouble();
             this->update = tparam["update method"].asString();
             this->momentum = tparam["momentum parameter"].asDouble();

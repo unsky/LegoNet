@@ -56,10 +56,10 @@ class AffineLayer {
 public:
     AffineLayer() {}
     ~AffineLayer() {}
-    static void forward(const vector<shared_ptr<Blob>>& in,
+    static void cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out);
 
-    static void backward(shared_ptr<Blob>& dout,
+    static void cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads);
 };
@@ -70,11 +70,11 @@ public:
     ConvLayer() {}
     ~ConvLayer() {}
 
-    static void forward(const vector<shared_ptr<Blob>>& in,
+    static void cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param);
 
-    static void backward(shared_ptr<Blob>& dout,
+    static void cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param);
@@ -86,11 +86,11 @@ public:
     PoolLayer() {}
     ~PoolLayer() {}
 
-    static void forward(const vector<shared_ptr<Blob>>& in,
+    static void cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param);
 
-    static void backward(shared_ptr<Blob>& dout,
+    static void cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param);
@@ -101,9 +101,9 @@ class ReluLayer {
 public:
     ReluLayer() {}
     ~ReluLayer() {}
-    static void forward(const vector<shared_ptr<Blob>>& in,
+    static void cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out);
-    static void backward(shared_ptr<Blob>& dout,
+    static void cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads);
 };
@@ -115,10 +115,10 @@ public:
     ~DropoutLayer() {}
 
 
-    static void forward(const vector<shared_ptr<Blob>>& in,
+    static void cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param);
-    static void backward(shared_ptr<Blob>& dout,
+    static void cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param);

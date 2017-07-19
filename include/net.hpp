@@ -38,9 +38,6 @@ public:
                  vector<shared_ptr<Blob>>& X,
                  vector<shared_ptr<Blob>>& Y);
 
-    /*! \brief train the net */
-
-    //void sampleInitData();
 
     /*! test num_grads of lnum th layer */
     void testLayer(NetParam& param, int lnum);

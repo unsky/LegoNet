@@ -70,11 +70,24 @@ void Net::setup(NetParam& param,
                 bottom[2].reset(new Blob(tF, 1, 1, 1, TRANDN));
                 (*bottom[2]) *= 1e-1;
             }
-            ConvLayer::forward(bottom, up , param.params[lname]);
+            if(params.cal_mode == "cpu")
+            {
+                ConvLayer::cpu_forward(bottom, up , param.params[lname]);}
+            else{
+            //    ConvLayer::gpu_forward(bottom,up,param.params[lname];)
+
+            }
         }
         if (ltype == "Pool") {
-            PoolLayer::forward(bottom, up, param.params[lname]);
-        }
+            if(params.cal_mode == "cpu")
+            {
+                PoolLayer::cpu_forward(bottom, up, param.params[lname]);
+                }
+            else{
+              //  PoolLayer::gpu_forward(bottom, up, param.params[lname]);
+
+            }
+            }
         if (ltype == "Fc") {
             int tF = param.params[lname].fc_kernels;
             int tC = bottom[0]->get_C();
@@ -88,12 +101,32 @@ void Net::setup(NetParam& param,
                 bottom[2].reset(new Blob(tF, 1, 1, 1, TRANDN));
                 (*bottom[2]) *= 1e-1;
             }
-            AffineLayer::forward(bottom, up);
+            if(params.cal_mode == "cpu"){
+                 AffineLayer::cpu_forward(bottom, up);
+            }
+            else{
+               // AffineLayer::gpu_forward(bottom,up);
+            }
+           
         }
-        if (ltype == "Relu")
-            ReluLayer::forward(bottom, up);
-        if (ltype == "Dropout")
-            DropoutLayer::forward(bottom, up, param.params[lname]);
+        if (ltype == "Relu"){
+            if(params.cal_mode == "cpu"){
+                ReluLayer::cpu_forward(bottom, up);
+            }
+            else{
+               // ReluLayer::gpu_forward(bottom,up);
+            }
+        }
+          
+        if (ltype == "Dropout"){
+            if(params.cpu_forward == "cpu"){
+                DropoutLayer::cpu_forward(bottom, up, param.params[lname]);
+            }
+            else{
+              //  DropoutLayer::gpu_forward(bottom, up, param.params[lname]);
+            }
+        }
+
         cout << "the up :" ;
         up->shape_string();
         data_[layers_[i+1]][0] = up;

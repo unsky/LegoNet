@@ -33,7 +33,7 @@ namespace lego_net {
     * \param[in]  const vector<Blob*>& in       in[0]:X, in[1]:weights, in[2]:bias
     * \param[out] Blob& out                     Y
     */
-void AffineLayer::forward(const vector<shared_ptr<Blob>>& in, shared_ptr<Blob>& out) {
+void AffineLayer::cpu_forward(const vector<shared_ptr<Blob>>& in, shared_ptr<Blob>& out) {
     if (out) {
         out.reset();
     }
@@ -60,7 +60,7 @@ void AffineLayer::forward(const vector<shared_ptr<Blob>>& in, shared_ptr<Blob>& 
 * \param[in]  const vector<Blob*>& cache    cache[0]:X, cache[1]:weights, cache[2]:bias
 * \param[out] vector<Blob*>& grads          grads[0]:dX, grads[1]:dW, grads[2]:db
 */
-void AffineLayer::backward(shared_ptr<Blob>& dout,
+void AffineLayer::cpu_backward(shared_ptr<Blob>& dout,
                            const vector<shared_ptr<Blob>>& cache,
                            vector<shared_ptr<Blob>>& grads) {
     shared_ptr<Blob> dX;

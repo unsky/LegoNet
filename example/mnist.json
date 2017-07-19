@@ -1,6 +1,7 @@
 // MiniNet example config file
 {
     "train": {
+        "calculatiom mode": "cpu",
         // original learning rate
         "learning rate" : 0.05,
         // learning rate decay: often set to 0.99

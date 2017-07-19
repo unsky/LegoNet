@@ -10,7 +10,7 @@ namespace lego_net {
 * \param[in]  const Param* param        conv params
 * \param[out] Blob& out                     Y
 */
-void PoolLayer::forward(const vector<shared_ptr<Blob>>& in,
+void PoolLayer::cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out,
                         Param& param) {
     if (out) {
@@ -51,7 +51,7 @@ void PoolLayer::forward(const vector<shared_ptr<Blob>>& in,
 * \param[in]  const vector<Blob*>& cache    cache[0]:X
 * \param[out] vector<Blob*>& grads          grads[0]:dX
 */
-void PoolLayer::backward(shared_ptr<Blob>& dout,
+void PoolLayer::cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads,
                          Param& param) {

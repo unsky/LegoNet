@@ -9,7 +9,7 @@ namespace lego_net {
 * \param[in]  const vector<Blob*>& in       in[0]:X
 * \param[out] Blob& out                     Y
 */
-void ReluLayer::forward(const vector<shared_ptr<Blob>>& in,
+void ReluLayer::cpu_forward(const vector<shared_ptr<Blob>>& in,
                         shared_ptr<Blob>& out) {
     if (out) {
         out.reset();
@@ -27,7 +27,7 @@ void ReluLayer::forward(const vector<shared_ptr<Blob>>& in,
 * \param[in]  const vector<Blob*>& cache    cache[0]:X
 * \param[out] vector<Blob*>& grads          grads[0]:dX
 */
-void ReluLayer::backward(shared_ptr<Blob>& dout,
+void ReluLayer::cpu_backward(shared_ptr<Blob>& dout,
                          const vector<shared_ptr<Blob>>& cache,
                          vector<shared_ptr<Blob>>& grads) {
     shared_ptr<Blob> dX(new Blob(*cache[0]));
