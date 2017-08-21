@@ -10,7 +10,6 @@ CNN框架设计（from zero to one）
 
 目前主要目标为模块化各个层。
 ```
-update 2017/7/11:opencv 多维数组不适合构建blob结构，尝试使用opencv的ml模块
 update 2017/7/19:通过设置calculate mode选择cpu模式或者gpu模式
 upate 2017/8/6: blob模块尝试使用openblas
 ```
